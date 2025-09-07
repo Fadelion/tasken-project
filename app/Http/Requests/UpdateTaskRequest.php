@@ -23,12 +23,12 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' =>'sometimes|required|string|max:150',
+            'title' => 'sometimes|required|string|max:150',
             'description' => 'nullable|string',
-            'priority' => ['sometimes|required', Rule::in(['faible', 'moyenne', 'elevee'])],
-            'status' => ['sometimes|required', Rule::in(['a_faire', 'en_cours', 'terminee'])],
+            'priority' => ['sometimes', 'required', Rule::in(['faible', 'moyenne', 'elevee'])],
+            'status' => ['sometimes', 'required', Rule::in(['a_faire', 'en_cours', 'terminee'])],
             'due_date' => 'nullable|date',
-            
+            'category_id' => ['sometimes', 'required', 'integer', Rule::exists('categories', 'id')->where('user_id', auth()->id())],
         ];
     }
 }

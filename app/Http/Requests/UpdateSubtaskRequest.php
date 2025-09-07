@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Subtask;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateSubtaskRequest extends FormRequest
@@ -11,7 +12,8 @@ class UpdateSubtaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $subtask = $this->route('subtask');
+        return $subtask && $this->user()->can('update', $subtask);
     }
 
     /**
@@ -22,7 +24,9 @@ class UpdateSubtaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'sometimes|required|string|max:150',
+            'status' => 'sometimes|boolean',
+            'order' => 'sometimes|integer',
         ];
     }
 }
