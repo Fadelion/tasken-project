@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class StoreTaskRequest extends FormRequest
@@ -12,7 +13,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -23,13 +24,17 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' =>'required|string|max:150',
+            'title' => 'required|string|max:150',
             'description' => 'nullable|string',
             'priority' => ['required', Rule::in(['faible', 'moyenne', 'elevee'])],
             'status' => ['required', Rule::in(['a_faire', 'en_cours', 'terminee'])],
             'due_date' => 'nullable|date',
-            'category_id' => ['required', 'integer', Rule::exists('categories', 'id')->where('user_id', auth()->id())]
-            
+            'category_id' => [
+                'required', 'integer',
+                Rule::exists('categories', 'id')->where(function ($query) {
+                    $query->where('user_id', auth()->id());
+                })
+            ]
         ];
     }
 }

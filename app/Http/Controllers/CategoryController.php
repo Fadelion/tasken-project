@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
 
 class CategoryController extends Controller
 {
@@ -13,7 +16,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Categories/Index', [
+            'categories' => Auth::user()->categories()->latest()->paginate(10)
+        ]);
     }
 
     /**
@@ -21,7 +26,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Categories/Create');
     }
 
     /**
@@ -29,7 +34,9 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        Auth::user()->categories()->create($request->validated());
+
+        return redirect()->back()->with('success', 'Catégorie crée');
     }
 
     /**
@@ -53,7 +60,10 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $this->authorize('update', $category);
+        $category->update($request->validated());
+
+        return redirect()->back()->with('success', 'Catégorie mis à jour');
     }
 
     /**
@@ -61,6 +71,9 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $this->authorize('delete', $category);
+        $category->delete();
+
+        return redirect()->back()->with('success', 'Catégorie supprimée');
     }
 }

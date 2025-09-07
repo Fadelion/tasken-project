@@ -11,10 +11,29 @@ class StoreSubtaskRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
+    public function rules(): array
+    {
+        return [
+            'task_id' => [
+                'required',
+                'integer',
+                'exists:tasks,id',
+                function ($attribute, $value, $fail) {
+                    $task = Task::find($value);
+                    if (!$task || $task->user_id !== auth()->id()) {
+                        $fail('La tâche sélectionnée n\'existe pas ou ne vous appartient pas.');
+                    }
+                },
+            ],
+            'title' => 'required|string|max:150',
+            'status' => 'sometimes|boolean',
+            'order' => 'sometimes|integer',
+        ];
+    }
+
     public function authorize(): bool
     {
-        $task = Task::find($this->input('task_id'));
-        return $task && $task->user_id == Auth::id();
+        return auth()->check();
     }
 
     /**
@@ -22,13 +41,4 @@ class StoreSubtaskRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
-    {
-        return [
-            'task_id' => 'required|integer|exists:tasks,id',
-            'title' => 'required|string|max:150',
-            'status' => 'sometimes|boolean',
-            'order' => 'sometimes|integer',
-        ];
-    }
 }

@@ -13,7 +13,12 @@ class UpdateSubtaskRequest extends FormRequest
     public function authorize(): bool
     {
         $subtask = $this->route('subtask');
-        return $subtask && $this->user()->can('update', $subtask);
+        
+        if (!$subtask instanceof Subtask) {
+            return false;
+        }
+        
+        return $this->user()->can('update', $subtask);
     }
 
     /**
