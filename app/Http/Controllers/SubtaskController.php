@@ -58,7 +58,7 @@ class SubtaskController extends Controller
             return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de la mise à jour.']);
         }
 
-        return Redirect::back();
+        return Redirect::back()->with('success', 'Sous-tâche mise à jour.');
     }
 
     /**
