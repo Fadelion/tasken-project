@@ -17,21 +17,23 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-       $tasks = Auth::user()->tasks()
+      $tasks = Auth::user()->tasks()
             ->with('category')
+            // Use withCount for efficient subtask counting
+            ->withCount(['subtasks', 'completedSubtasks'])
             ->when($request->input('search'), function ($query, $search) {
                 $query->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(10)
-            ->withQueryString(); // Append query string to pagination links
+            ->withQueryString();
 
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks,
-            'filters' => $request->only(['search']), // Pass filters back to the view
+            'filters' => $request->only(['search']),
             'success' => session('success'),
-        ]);
+        ]); 
     }
 
     /**
