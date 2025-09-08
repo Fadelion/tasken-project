@@ -27,8 +27,10 @@ class TaskController extends Controller
      */
     public function create()
     {
+        $categories = Auth::user()->categories()->get(['id', 'title']);
+
         return Inertia::render('Tasks/Create', [
-            'categories' => Auth::user()->categories()->get(['id', 'title']),
+            'categories' => $categories,
         ]);
     }
 
@@ -47,12 +49,14 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        
         $this->authorize('view', $task);
         $task->load(['category', 'subtasks']);
 
         return Inertia::render('Tasks/Show', [
             'task' => $task,
         ]);
+        
     }
 
     /**
@@ -60,12 +64,19 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        
         $this->authorize('update', $task);
+        $categories = Auth::user()->categories()->get(['id', 'title']);
+
+        // Eager load subtasks for the edit page
+        $task->load('subtasks');
 
         return Inertia::render('Tasks/Edit', [
             'task' => $task,
-            'categories' => Auth::user()->categories()->get(['id', 'title']),
+            'categories' => $categories,
+            'subtasks' => $task->subtasks,
         ]);
+        
 
     }
 
@@ -88,6 +99,6 @@ class TaskController extends Controller
         $this->authorize('delete', $task);
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('sucess', 'Tache supprimée')
+        return redirect()->route('tasks.index')->with('sucess', 'Tache supprimée');
     }
 }

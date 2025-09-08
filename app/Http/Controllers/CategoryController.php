@@ -16,8 +16,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        $categories = Auth::user()->categories()->latest()->paginate(10);
+
         return Inertia::render('Categories/Index', [
-            'categories' => Auth::user()->categories()->latest()->paginate(10)
+            'categories' => $categories,
+            'success' => session('success')
         ]);
     }
 
@@ -36,7 +39,8 @@ class CategoryController extends Controller
     {
         Auth::user()->categories()->create($request->validated());
 
-        return redirect()->back()->with('success', 'Catégorie crée');
+        //return redirect()->back()->with('success', 'Catégorie crée');
+        return redirect(route('categories.index'))->with('success', 'Catégorie crée');
     }
 
     /**
@@ -52,7 +56,11 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        $this->authorize('update', $category);
+
+        return Inertia::render('Categories/Edit', [
+            'category' => $category
+        ]);
     }
 
     /**
@@ -63,7 +71,8 @@ class CategoryController extends Controller
         $this->authorize('update', $category);
         $category->update($request->validated());
 
-        return redirect()->back()->with('success', 'Catégorie mis à jour');
+        //return redirect()->back()->with('success', 'Catégorie mis à jour');
+        return redirect(route('categories.index'))->with('success', 'Catégorie mis à jour');
     }
 
     /**
@@ -74,6 +83,7 @@ class CategoryController extends Controller
         $this->authorize('delete', $category);
         $category->delete();
 
-        return redirect()->back()->with('success', 'Catégorie supprimée');
+        //return redirect()->back()->with('success', 'Catégorie supprimée');
+        return redirect(route('categories.index'))->with('success', 'Catégorie supprimée');
     }
 }

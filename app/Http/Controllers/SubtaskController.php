@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Requests\UpdateSubtaskRequest;
 use App\Models\Subtask;
+use App\Models\Task;
+use Illuminate\Support\Facades\Gate;
+//use Illuminate\Http\Request;
 
 class SubtaskController extends Controller
 {
@@ -27,9 +30,12 @@ class SubtaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubtaskRequest $request)
+    public function store(StoreSubtaskRequest $request, Task $task)
     {
-        //
+        Gate::authorize('update', $task);
+        $task->subtasks()->create($request->validated());
+
+        return redirect()->back()->with('success', 'Sous-tâche ajoutée');
     }
 
     /**
@@ -59,8 +65,11 @@ class SubtaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Subtask $subtask)
+    public function destroy(Task $task, Subtask $subtask)
     {
-        //
+        Gate::authorize('update', $subtask->task);
+        $subtask->delete();
+
+        return redirect()->back()->with('success', 'Sous-tâche supprimée');
     }
 }

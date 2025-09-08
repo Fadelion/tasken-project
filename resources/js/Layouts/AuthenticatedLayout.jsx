@@ -28,7 +28,19 @@ export default function AuthenticatedLayout({ header, children }) {
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
                                 >
-                                    Dashboard
+                                    Tableau de bord
+                                </NavLink>
+                                <NavLink
+                                    href={route('tasks.index')}
+                                    active={route().current('tasks.index')}
+                                >
+                                    Tâches
+                                </NavLink>
+                                <NavLink
+                                    href={route('categories.index')}
+                                    active={route().current('categories.index')}
+                                >
+                                    Catégories
                                 </NavLink>
                             </div>
                         </div>

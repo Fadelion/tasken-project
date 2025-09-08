@@ -37,7 +37,7 @@ class SubtaskPolicy
      */
     public function update(User $user, Subtask $subtask): bool
     {
-        return false;
+        return $user->id === $subtask->task->user_id;
     }
 
     /**
@@ -45,7 +45,7 @@ class SubtaskPolicy
      */
     public function delete(User $user, Subtask $subtask): bool
     {
-        return false;
+        return $user->id === $subtask->task->user_id;
     }
 
     /**
