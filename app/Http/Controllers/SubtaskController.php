@@ -2,77 +2,78 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Subtask;
 use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Requests\UpdateSubtaskRequest;
-use App\Models\Subtask;
-use App\Models\Task;
-use Illuminate\Support\Facades\Gate;
-//use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class SubtaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
+    use AuthorizesRequests;
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubtaskRequest $request, Task $task)
+    public function store(StoreSubtaskRequest $request)
     {
-        Gate::authorize('update', $task);
-        $task->subtasks()->create($request->validated());
-
-        return redirect()->back()->with('success', 'Sous-tâche ajoutée');
+        try {
+            Subtask::create($request->validated());
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la création de la sous-tâche: '.$e->getMessage());
+            return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de l\'ajout de la sous-tâche.']);
+        }
+        return Redirect::back()->with('success', 'Sous-tâche ajoutée avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Subtask $subtask)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Subtask $subtask)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateSubtaskRequest $request, Subtask $subtask)
     {
-        Gate::authorize('update', $subtask->task);
-        $subtask->update($request->validated());
+        $this->authorize('update', $subtask);
+        $task = $subtask->task;
+        $validatedData = $request->validated();
 
-        return redirect()->back()->with('success', 'Sous-tâche mise à jour');
+        // Logique pour les tâches séquentielles
+        if ($task->is_sequential && isset($validatedData['status']) && $validatedData['status'] === true) {
+            // Vérifier si toutes les sous-tâches précédentes sont terminées
+            $previousSubtasksComplete = Subtask::where('task_id', $task->id)
+                                              ->where('order', '<', $subtask->order)
+                                              ->where('status', false)
+                                              ->doesntExist();
+
+            if (!$previousSubtasksComplete) {
+                return Redirect::back()->withErrors(['msg' => 'Veuillez terminer les sous-tâches précédentes avant de marquer celle-ci comme terminée.']);
+            }
+        }
+
+        try {
+            $subtask->update($validatedData);
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la mise à jour de la sous-tâche: '.$e->getMessage());
+            return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de la mise à jour.']);
+        }
+
+        return Redirect::back();
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task, Subtask $subtask)
+    public function destroy(Subtask $subtask)
     {
-        Gate::authorize('update', $subtask->task);
-        $subtask->delete();
+        $this->authorize('delete', $subtask);
+        try {
+             $subtask->delete();
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la suppression de la sous-tâche: '.$e->getMessage());
+            return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de la suppression.']);
+        }
 
-        return redirect()->back()->with('success', 'Sous-tâche supprimée');
+        return Redirect::back()->with('success', 'Sous-tâche supprimée.');
     }
 }

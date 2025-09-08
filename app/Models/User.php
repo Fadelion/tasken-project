@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -47,14 +48,14 @@ class User extends Authenticatable
     }
 
     /**
-     * Relation utilisateur et tache
+     * Relation utilisateur et tache : un utilisateur peut avoir plusieurs tâches
      */
     public function tasks() {
         return $this->hasMany(Task::class);
     }
 
     /**
-     * Relation utilisateur et catégorie
+     * Relation utilisateur et catégorie: un utilisateur peut avoir plusieurs catégories
      */
     public function categories()  {
         return $this->hasMany(Category::class);

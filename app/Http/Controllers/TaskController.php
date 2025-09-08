@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Task;
-use Illuminate\Http\Request;
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
+use Exception;
+
 
 class TaskController extends Controller
 {
@@ -17,25 +20,20 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-      $tasks = Auth::user()->tasks()
-            ->with('category')
-            // Use withCount for efficient subtask counting
+        $user = Auth::user();
+        $filters = request()->only(['search']);
+        $tasks = Task::where('user_id', $user->id)
+            ->with('category', 'subtasks')
             ->withCount(['subtasks', 'completedSubtasks'])
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
-            })
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->paginate(8);
 
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks,
-            'filters' => $request->only(['search']),
-            'success' => session('success'),
-        ]); 
+            'filters' => $filters,
+        ]);
     }
 
     /**
@@ -43,10 +41,9 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $categories = Auth::user()->categories()->get(['id', 'title']);
-
+        $categories = Auth::user()->categories;
         return Inertia::render('Tasks/Create', [
-            'categories' => $categories,
+            'categories' => $categories
         ]);
     }
 
@@ -55,24 +52,16 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request)
     {
-        Auth::user()->tasks()->create($request->validated());
-        
-        return redirect()->route('tasks.index')->with('sucess', 'Tache crée avec succès.');
-    }
+        try {
+            $task = new Task($request->validated());
+            $task->user_id = Auth::id();
+            $task->save();
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la création de la tâche: '.$e->getMessage());
+            return Redirect::route('tasks.index')->withErrors(['msg' => 'Une erreur est survenue lors de la création de la tâche.']);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Task $task)
-    {
-        
-        $this->authorize('view', $task);
-        $task->load(['category', 'subtasks']);
-
-        return Inertia::render('Tasks/Show', [
-            'task' => $task,
-        ]);
-        
+        return Redirect::route('tasks.index')->with('success', 'Tâche créée avec succès.');
     }
 
     /**
@@ -80,20 +69,15 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        
-        Gate::authorize('update', $task);
-        $categories = Auth::user()->categories()->get(['id', 'title']);
-
-        // Eager load subtasks for the edit page
-        $task->load('subtasks');
+        $this->authorize('update', $task);
+        $categories = Auth::user()->categories;
+        $subtasks = $task->subtasks()->orderBy('order')->get();
 
         return Inertia::render('Tasks/Edit', [
             'task' => $task,
             'categories' => $categories,
-            'subtasks' => $task->subtasks,
+            'subtasks' => $subtasks,
         ]);
-        
-
     }
 
     /**
@@ -101,10 +85,15 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        Gate::authorize('update', $task);
-        $task->update($request->validated());
+        $this->authorize('update', $task);
+        try {
+            $task->update($request->validated());
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la mise à jour de la tâche: '.$e->getMessage());
+            return Redirect::route('tasks.index')->withErrors(['msg' => 'Une erreur est survenue lors de la mise à jour.']);
+        }
 
-        return redirect()->route('tasks.index')->with('success', 'La tache a été mise à jour');
+        return Redirect::route('tasks.index')->with('success', 'Tâche mise à jour avec succès.');
     }
 
     /**
@@ -112,9 +101,13 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        Gate::authorize('update', $task);
-        $task->delete();
-
-        return redirect()->route('tasks.index')->with('sucess', 'Tache supprimée');
+        $this->authorize('delete', $task);
+        try {
+            $task->delete();
+        } catch (Exception $e) {
+            Log::error('Erreur lors de la suppression de la tâche: '.$e->getMessage());
+            return Redirect::route('tasks.index')->withErrors(['msg' => 'Une erreur est survenue lors de la suppression.']);
+        }
+        return Redirect::route('tasks.index')->with('success', 'Tâche supprimée avec succès.');
     }
 }
