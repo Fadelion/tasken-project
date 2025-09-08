@@ -149,19 +149,25 @@ export default function Edit({ auth, task, categories, subtasks }) {
                         {/* Liste des sous-tâches */}
                         {/* Subtasks List with Checkboxes */}
                         <div className="space-y-2">
-                            {subtasks.map(subtask => (
-                                <div key={subtask.id} className="flex items-center justify-between p-2 border rounded">
-                                    <div className="flex items-center">
-                                        <Checkbox
-                                            name={`subtask_status_${subtask.id}`}
-                                            checked={subtask.status}
-                                            onChange={() => handleToggleSubtask(subtask)}
-                                        />
-                                        <span className={`ml-2 ${subtask.status ? 'line-through text-gray-500' : ''}`}>{subtask.title}</span>
+                            {subtasks.map((subtask, index) => {
+                                const isPreviousSubtaskCompleted = index === 0 || subtasks[index - 1].status;
+                                const isDisabled = task.is_sequential && !isPreviousSubtaskCompleted;
+
+                                return (
+                                    <div key={subtask.id} className={`flex items-center justify-between p-2 border rounded ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                                        <div className="flex items-center">
+                                            <Checkbox
+                                                name={`subtask_status_${subtask.id}`}
+                                                checked={subtask.status}
+                                                onChange={() => handleToggleSubtask(subtask)}
+                                                disabled={isDisabled}
+                                            />
+                                            <span className={`ml-2 ${subtask.status ? 'line-through text-gray-500' : ''}`}>{subtask.title}</span>
+                                        </div>
+                                        <DangerButton onClick={() => handleDeleteSubtask(subtask.id)}>Delete</DangerButton>
                                     </div>
-                                    <DangerButton onClick={() => handleDeleteSubtask(subtask.id)}>Delete</DangerButton>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
