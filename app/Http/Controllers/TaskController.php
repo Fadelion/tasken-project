@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -13,13 +14,23 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       $tasks = Auth::user()->tasks()->with('category')->latest()->paginate(10);
+       $tasks = Auth::user()->tasks()
+            ->with('category')
+            ->when($request->input('search'), function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString(); // Append query string to pagination links
 
-       return Inertia::render('Tasks/Index', [
-        'tasks' => $tasks,
-       ]);
+        return Inertia::render('Tasks/Index', [
+            'tasks' => $tasks,
+            'filters' => $request->only(['search']), // Pass filters back to the view
+            'success' => session('success'),
+        ]);
     }
 
     /**
