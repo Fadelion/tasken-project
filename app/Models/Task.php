@@ -32,26 +32,30 @@ class Task extends Model
     /**
      * Relation entre utilisateur et tache
      */
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     /**
      * Relation entre tache et categorie
      */
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
 
     /**
      * Relation entre tache et sous taches
      */
-    public function subtasks() {
+    public function subtasks()
+    {
         return $this->hasMany(Subtask::class);
     }
 
     // Fonction de comptage des sous-tâches terminées
-    public function completedSubtasks() {
+    public function completedSubtasks()
+    {
         return $this->hasMany(Subtask::class)->where('status', true);
     }
 
@@ -60,24 +64,26 @@ class Task extends Model
      * de sous-tâches terminées
      * 
      * @return \Illuminate\Database\Eloquent\Casts\Attribute
-     */
-    protected function progressPercentage() {
-        return new Attribute(
-            get: function() {
-                // S'assurer que subtasks_count est bien chargé
-                if (! $this->relationLoaded('subtasks') && ! isset($this->subtasks_count)) {
-                    $this->loadCount('subtasks', 'completedSubtasks');
+    */
+
+    protected function progressPercentage(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // Charge les compteurs si non présents
+                if (!isset($this->subtasks_count) || !isset($this->completedSubtasks_count)) {
+                    $this->loadCount(['subtasks', 'completedSubtasks']);
                 }
 
-                $totalSubtasks = $this->subtasks_count;
-                $completedSubtasks = $this->completedSubtasks_count;
+                $totalSubtasks = $this->subtasks_count ?? 0;
+                $completedSubtasks = $this->completedSubtasks_count ?? 0;
 
                 if ($totalSubtasks == 0) {
                     return 0;
                 }
 
                 return round(($completedSubtasks / $totalSubtasks) * 100);
-            } 
+            }
         );
     }
 }

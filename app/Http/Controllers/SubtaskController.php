@@ -59,7 +59,10 @@ class SubtaskController extends Controller
      */
     public function update(UpdateSubtaskRequest $request, Subtask $subtask)
     {
-        //
+        Gate::authorize('update', $subtask->task);
+        $subtask->update($request->validated());
+
+        return redirect()->back()->with('success', 'Sous-tâche mise à jour');
     }
 
     /**

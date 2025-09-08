@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class);
 
     // Nested routes pour les sous-tâches
-    Route::resource('tasks.subtasks', SubtaskController::class)->shallow()->only(['store', 'destroy']);
+    Route::resource('tasks.subtasks', SubtaskController::class)->shallow()->only(['store', 'destroy', 'update']);
 });
 
 require __DIR__.'/auth.php';
