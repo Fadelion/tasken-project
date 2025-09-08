@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class TaskController extends Controller
@@ -76,7 +77,7 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         
-        $this->authorize('update', $task);
+        Gate::authorize('update', $task);
         $categories = Auth::user()->categories()->get(['id', 'title']);
 
         // Eager load subtasks for the edit page
@@ -96,10 +97,10 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        $this->authorize('update', $task);
+        Gate::authorize('update', $task);
         $task->update($request->validated());
 
-        return redirect()->route('task.index')->with('success', 'La tache a été mise à jour');
+        return redirect()->route('tasks.index')->with('success', 'La tache a été mise à jour');
     }
 
     /**
@@ -107,7 +108,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        $this->authorize('delete', $task);
+        Gate::authorize('update', $task);
         $task->delete();
 
         return redirect()->route('tasks.index')->with('sucess', 'Tache supprimée');

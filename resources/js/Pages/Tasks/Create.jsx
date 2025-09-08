@@ -11,7 +11,7 @@ export default function Create({ categories }) {
         description: '',
         category_id: categories.length > 0 ? categories[0].id : '',
         priority: 'Normal',
-        status: 'A Faire',
+        status: 'Open',
         due_date: '',
     });
 
