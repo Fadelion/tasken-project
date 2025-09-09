@@ -42,9 +42,14 @@ export default function TaskCard({ task, onDelete }) {
             <div className="mt-4 flex justify-between items-center">
                 <div className="flex items-center space-x-2">
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{task.status}</span>
-                    <span className="text-xs text-gray-500">{new Date(task.due_date).toLocaleDateString()}</span>
+                    {task.due_date && (
+                        <span className="text-xs text-gray-500">
+                            Due: {new Date(task.due_date).toLocaleDateString()}
+                        </span>
+                    )}
                 </div>
                 <div className="flex items-center space-x-2">
+                    <Link href={route('tasks.show', task.id)} className="text-sm text-gray-600 hover:text-gray-900 font-medium">View</Link>
                     <Link href={route('tasks.edit', task.id)} className="text-sm text-indigo-600 hover:text-indigo-900 font-medium">Edit</Link>
                     <button onClick={() => onDelete(task.id)} disabled={processing} className="text-sm text-red-600 hover:text-red-900 font-medium">
                         Delete

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Subtask;
 use App\Models\User;
+use App\Observers\SubtaskObserver;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -30,5 +32,7 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
         });
+
+        Subtask::observe(SubtaskObserver::class);
     }
 }
