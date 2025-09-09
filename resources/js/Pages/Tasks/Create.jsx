@@ -44,9 +44,9 @@ export default function Create({ auth, categories }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Create a New Task</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Créer une nouvelle tâche</h2>}
         >
-            <Head title="Create Task" />
+            <Head title="Créer une tâche" />
 
             <div className="py-12">
                 <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
@@ -55,7 +55,7 @@ export default function Create({ auth, categories }) {
                             <form onSubmit={submit}>
                                 {/* Task Title */}
                                 <div className="mb-6">
-                                    <InputLabel htmlFor="title" value="Title" />
+                                    <InputLabel htmlFor="title" value="Titre" />
                                     <TextInput
                                         id="title"
                                         value={data.title}
@@ -82,7 +82,7 @@ export default function Create({ auth, categories }) {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     {/* Category */}
                                     <div>
-                                        <InputLabel htmlFor="category_id" value="Category" />
+                                        <InputLabel htmlFor="category_id" value="Catégorie" />
                                         <select
                                             id="category_id"
                                             value={data.category_id}
@@ -95,7 +95,7 @@ export default function Create({ auth, categories }) {
                                     </div>
                                     {/* Due Date */}
                                     <div>
-                                        <InputLabel htmlFor="due_date" value="Due Date" />
+                                        <InputLabel htmlFor="due_date" value="Date d'échéance" />
                                         <TextInput
                                             id="due_date"
                                             type="date"
@@ -107,32 +107,32 @@ export default function Create({ auth, categories }) {
                                     </div>
                                     {/* Priority */}
                                     <div>
-                                        <InputLabel htmlFor="priority" value="Priority" />
+                                        <InputLabel htmlFor="priority" value="Priorité" />
                                         <select
                                             id="priority"
                                             value={data.priority}
                                             onChange={(e) => setData('priority', e.target.value)}
                                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                         >
-                                            <option value="Low">Low</option>
+                                            <option value="Low">Faible</option>
                                             <option value="Normal">Normal</option>
-                                            <option value="High">High</option>
+                                            <option value="High">Élevée</option>
                                         </select>
                                         <InputError message={errors.priority} className="mt-2" />
                                     </div>
                                     {/* Status */}
                                     <div>
-                                        <InputLabel htmlFor="status" value="Status" />
+                                        <InputLabel htmlFor="status" value="Statut" />
                                         <select
                                             id="status"
                                             value={data.status}
                                             onChange={(e) => setData('status', e.target.value)}
                                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                         >
-                                            <option value="Open">Open</option>
-                                            <option value="In Progress">In Progress</option>
-                                            <option value="Completed">Completed</option>
-                                            <option value="Cancel">Cancel</option>
+                                            <option value="Open">À faire</option>
+                                            <option value="In Progress">En cours</option>
+                                            <option value="Completed">Terminé</option>
+                                            <option value="Cancel">Annulé</option>
                                         </select>
                                         <InputError message={errors.status} className="mt-2" />
                                     </div>
@@ -140,7 +140,7 @@ export default function Create({ auth, categories }) {
 
                                 {/* Subtasks Section */}
                                 <div className="mb-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2">Subtasks</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">Sous-tâches</h3>
                                     <div className="space-y-4">
                                         {data.subtasks.map((subtask, index) => (
                                             <div key={index} className="flex items-center space-x-2">
@@ -149,23 +149,23 @@ export default function Create({ auth, categories }) {
                                                     value={subtask.title}
                                                     onChange={(e) => handleSubtaskChange(index, e.target.value)}
                                                     className="block w-full"
-                                                    placeholder={`Subtask ${index + 1}`}
+                                                    placeholder={`Sous-tâche ${index + 1}`}
                                                 />
                                                 <button type="button" onClick={() => removeSubtask(index)} className="text-red-500 hover:text-red-700">
-                                                    Remove
+                                                    Supprimer
                                                 </button>
                                             </div>
                                         ))}
                                     </div>
                                     <SecondaryButton type="button" onClick={addSubtask} className="mt-4">
-                                        Add Subtask
+                                        Ajouter une sous-tâche
                                     </SecondaryButton>
                                 </div>
 
                                 <div className="flex items-center justify-end space-x-4">
-                                    <Link href={route('tasks.index')} className="text-gray-600">Cancel</Link>
+                                    <Link href={route('tasks.index')} className="text-gray-600">Annuler</Link>
                                     <PrimaryButton disabled={processing}>
-                                        Create Task
+                                        Créer la tâche
                                     </PrimaryButton>
                                 </div>
                             </form>

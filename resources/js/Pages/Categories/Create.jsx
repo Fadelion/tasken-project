@@ -19,7 +19,7 @@ export default function Create({ categories }) {
         <AuthenticatedLayout
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Créer une catégorie</h2>}
         >
-            <Head title="Création de tâche" />
+            <Head title="Création de catégorie" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -27,7 +27,7 @@ export default function Create({ categories }) {
                         <div className="p-6 text-gray-900">
                             <form onSubmit={submit}>
                                 <div className="mb-4">
-                                    <InputLabel htmlFor="title" value="Title" />
+                                    <InputLabel htmlFor="title" value="Titre" />
                                     <TextInput
                                         id="title"
                                         name="title"

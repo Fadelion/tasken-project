@@ -28,7 +28,7 @@ export default function Edit({ auth, category }) {
                         <div className="p-6 text-gray-900">
                             <form onSubmit={submit}>
                                 <div className="mb-4">
-                                    <InputLabel htmlFor="title" value="Title" />
+                                    <InputLabel htmlFor="title" value="Titre" />
                                     <TextInput
                                         id="title"
                                         name="title"

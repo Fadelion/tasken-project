@@ -76,14 +76,14 @@ export default function Edit({ auth, task, categories, subtasks }) {
                             {/* Formulaire pour les champs de la tâche*/}
                             {/* Titre */}
                             <div className="mb-4">
-                                <InputLabel htmlFor="title" value="Title" />
+                                <InputLabel htmlFor="title" value="Titre" />
                                 <TextInput id="title" name="title" value={data.title} className="mt-1 block w-full" onChange={(e) => setData('title', e.target.value)} />
                                 <InputError message={errors.title} className="mt-2" />
                             </div>
 
                             {/* Categorie */}
                             <div className="mb-4">
-                                <InputLabel htmlFor="category_id" value="Category" />
+                                <InputLabel htmlFor="category_id" value="Catégorie" />
                                 <select id="category_id" name="category_id" value={data.category_id} className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" onChange={(e) => setData('category_id', e.target.value)}>
                                     {categories.map(category => (
                                         <option key={category.id} value={category.id}>{category.title}</option>
@@ -101,21 +101,21 @@ export default function Edit({ auth, task, categories, subtasks }) {
 
                             {/* Priorité */}
                             <div className="mb-4">
-                                <InputLabel htmlFor="priority" value="Priority" />
+                                <InputLabel htmlFor="priority" value="Priorité" />
                                 <select id="priority" name="priority" value={data.priority} className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" onChange={(e) => setData('priority', e.target.value)}>
                                     <option value="Low">Faible</option>
                                     <option value="Normal">Normal</option>
-                                    <option value="High">Elevé</option>
+                                    <option value="High">Élevée</option>
                                 </select>
                                 <InputError message={errors.priority} className="mt-2" />
                             </div>
 
                             {/* Statut */}
                             <div className="mb-4">
-                                <InputLabel htmlFor="status" value="Status" />
+                                <InputLabel htmlFor="status" value="Statut" />
                                 <select id="status" name="status" value={data.status} className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" onChange={(e) => setData('status', e.target.value)}>
-                                    <option value="Open">A Faire</option>
-                                    <option value="In Progress">En Cours</option>
+                                    <option value="Open">À faire</option>
+                                    <option value="In Progress">En cours</option>
                                     <option value="Completed">Terminé</option>
                                     <option value="Cancel">Annulé</option>
                                 </select>
@@ -124,7 +124,7 @@ export default function Edit({ auth, task, categories, subtasks }) {
 
                             {/* Date d'échéance */}
                             <div className="mb-4">
-                                <InputLabel htmlFor="due_date" value="Due Date" />
+                                <InputLabel htmlFor="due_date" value="Date d'échéance" />
                                 <TextInput id="due_date" type="date" name="due_date" value={data.due_date} className="mt-1 block w-full" onChange={(e) => setData('due_date', e.target.value)} />
                                 <InputError message={errors.due_date} className="mt-2" />
                             </div>
@@ -134,12 +134,12 @@ export default function Edit({ auth, task, categories, subtasks }) {
 
                     {/* Section des sous-tâches */}
                     <div className="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Subtasks</h3>
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">Sous-tâches</h3>
 
                         {/* Formulaire des sous-tâches */}
                         <form onSubmit={handleAddSubtask} className="mb-6">
                             <div className="mb-4">
-                                <InputLabel htmlFor="subtask_title" value="New Subtask Title" />
+                                <InputLabel htmlFor="subtask_title" value="Titre de la nouvelle sous-tâche" />
                                 <TextInput id="subtask_title" value={subtaskData.title} className="mt-1 block w-full" onChange={(e) => setSubtaskData('title', e.target.value)} />
                                 <InputError message={subtaskErrors.title} className="mt-2" />
                             </div>
@@ -164,7 +164,7 @@ export default function Edit({ auth, task, categories, subtasks }) {
                                             />
                                             <span className={`ml-2 ${subtask.status ? 'line-through text-gray-500' : ''}`}>{subtask.title}</span>
                                         </div>
-                                        <DangerButton onClick={() => handleDeleteSubtask(subtask.id)}>Delete</DangerButton>
+                                        <DangerButton onClick={() => handleDeleteSubtask(subtask.id)}>Supprimer</DangerButton>
                                     </div>
                                 );
                             })}

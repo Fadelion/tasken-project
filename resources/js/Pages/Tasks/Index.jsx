@@ -60,9 +60,9 @@ export default function Index({ auth, tasks, filters, success }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Tasks</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Tâches</h2>}
         >
-            <Head title="Tasks" />
+            <Head title="Tâches" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -73,14 +73,14 @@ export default function Index({ auth, tasks, filters, success }) {
                     )}
                     <div className="mb-4 flex justify-between items-center">
                         <Link href={route('tasks.create')} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md">
-                            Add Task
+                            Ajouter une tâche
                         </Link>
                         <TextInput
                             type="text"
                             name="search"
                             value={search}
                             className="block w-full md:w-1/3"
-                            placeholder="Search tasks..."
+                            placeholder="Rechercher des tâches..."
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
@@ -93,7 +93,7 @@ export default function Index({ auth, tasks, filters, success }) {
 
                     {tasks.data.length === 0 && (
                         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                            <p className="text-center text-gray-500">No tasks found.</p>
+                            <p className="text-center text-gray-500">Aucune tâche trouvée.</p>
                         </div>
                     )}
 
@@ -106,15 +106,15 @@ export default function Index({ auth, tasks, filters, success }) {
             <Modal show={confirmingTaskDeletion} onClose={closeModal}>
                 <form onSubmit={deleteTask} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Are you sure you want to delete this task?
+                        Êtes-vous sûr de vouloir supprimer cette tâche ?
                     </h2>
                     <p className="mt-1 text-sm text-gray-600">
-                        Once the task is deleted, all of its data will be permanently deleted.
+                        Une fois la tâche supprimée, toutes ses données seront définitivement perdues.
                     </p>
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                        <SecondaryButton onClick={closeModal}>Annuler</SecondaryButton>
                         <DangerButton className="ml-3">
-                            Delete Task
+                            Supprimer la tâche
                         </DangerButton>
                     </div>
                 </form>

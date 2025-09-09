@@ -40,12 +40,12 @@ export default function Index({ auth, categories }) {
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <Link href={route('categories.create')} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
-                                Add Category
+                                Ajouter une catégorie
                             </Link>
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
@@ -55,10 +55,10 @@ export default function Index({ auth, categories }) {
                                             <td className="px-6 py-4 whitespace-nowrap">{category.title}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <Link href={route('categories.edit', category.id)} className="text-indigo-600 hover:text-indigo-900 mr-4">
-                                                    Edit
+                                                    Modifier
                                                 </Link>
                                                 <button onClick={() => confirmCategoryDeletion(category)} className="text-red-600 hover:text-red-900">
-                                                    Delete
+                                                    Supprimer
                                                 </button>
                                             </td>
                                         </tr>
@@ -73,15 +73,15 @@ export default function Index({ auth, categories }) {
             <Modal show={confirmingCategoryDeletion} onClose={closeModal}>
                 <form onSubmit={deleteCategory} className="p-6">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Are you sure you want to delete this category?
+                        Êtes-vous sûr de vouloir supprimer cette catégorie ?
                     </h2>
                     <p className="mt-1 text-sm text-gray-600">
-                        Once the category is deleted, all of its resources and data will be permanently deleted.
+                        Une fois la catégorie supprimée, toutes ses ressources et données seront définitivement perdues.
                     </p>
                     <div className="mt-6 flex justify-end">
-                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                        <SecondaryButton onClick={closeModal}>Annuler</SecondaryButton>
                         <DangerButton className="ml-3">
-                            Delete Category
+                            Supprimer la catégorie
                         </DangerButton>
                     </div>
                 </form>
