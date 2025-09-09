@@ -17,6 +17,10 @@ class SubtaskController extends Controller
     use AuthorizesRequests;
     /**
      * Store a newly created resource in storage.
+     *
+     * @param \App\Http\Requests\StoreSubtaskRequest $request
+     * @param \App\Models\Task $task
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreSubtaskRequest $request, Task $task)
     {
@@ -32,6 +36,10 @@ class SubtaskController extends Controller
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param \App\Http\Requests\UpdateSubtaskRequest $request
+     * @param \App\Models\Subtask $subtask
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(UpdateSubtaskRequest $request, Subtask $subtask)
     {
@@ -64,6 +72,9 @@ class SubtaskController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param \App\Models\Subtask $subtask
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Subtask $subtask)
     {

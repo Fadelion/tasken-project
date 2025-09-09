@@ -30,7 +30,9 @@ class Task extends Model
      */
     protected $appends = ['progress_percentage'];
     /**
-     * Relation entre utilisateur et tache
+     * Get the user that owns the task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
@@ -38,7 +40,9 @@ class Task extends Model
     }
 
     /**
-     * Relation entre tache et categorie
+     * Get the category of the task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function category()
     {
@@ -46,14 +50,20 @@ class Task extends Model
     }
 
     /**
-     * Relation entre tache et sous taches
+     * Get the subtasks for the task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function subtasks()
     {
         return $this->hasMany(Subtask::class);
     }
 
-    // Fonction de comptage des sous-tâches terminées
+    /**
+     * Get the completed subtasks for the task.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function completedSubtasks()
     {
         return $this->hasMany(Subtask::class)->where('status', true);

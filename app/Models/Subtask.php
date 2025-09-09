@@ -18,7 +18,9 @@ class Subtask extends Model
     ];
 
     /**
-     * Relation entre sous-tache et tache
+     * Get the task that owns the subtask.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function task() {
         return $this->belongsTo(Task::class);
