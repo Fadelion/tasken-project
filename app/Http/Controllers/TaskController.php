@@ -25,10 +25,15 @@ class TaskController extends Controller
         $user = Auth::user();
         $filters = request()->only(['search']);
         $tasks = Task::where('user_id', $user->id)
+            ->when(request('search'), function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
             ->with('category', 'subtasks')
             ->withCount(['subtasks', 'completedSubtasks'])
             ->latest()
-            ->paginate(8);
+            ->paginate(8)
+            ->appends(request()->input());
 
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks,

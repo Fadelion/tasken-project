@@ -33,7 +33,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'priority' => ['sometimes', 'required', Rule::in(['Low', 'Normal', 'High'])],
             'status' => ['sometimes', 'required', Rule::in(['Open', 'In Progress', 'Completed', 'Deferred'])],
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:today',
             'category_id' => ['sometimes', 'required', 'integer', Rule::exists('categories', 'id')->where('user_id', auth()->id())],
         ];
     }
