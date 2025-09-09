@@ -1,7 +1,32 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
+import { useState } from 'react';
+import Modal from '@/Components/Modal';
+import SecondaryButton from '@/Components/SecondaryButton';
+import DangerButton from '@/Components/DangerButton';
 
 export default function Index({ auth, categories }) {
+    const [confirmingCategoryDeletion, setConfirmingCategoryDeletion] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState(null);
+
+    const confirmCategoryDeletion = (category) => {
+        setCategoryToDelete(category);
+        setConfirmingCategoryDeletion(true);
+    };
+
+    const deleteCategory = (e) => {
+        e.preventDefault();
+        if (categoryToDelete) {
+            router.delete(route('categories.destroy', categoryToDelete.id), {
+                onSuccess: () => closeModal(),
+            });
+        }
+    };
+
+    const closeModal = () => {
+        setConfirmingCategoryDeletion(false);
+        setCategoryToDelete(null);
+    };
 
     return (
         <AuthenticatedLayout
@@ -21,12 +46,21 @@ export default function Index({ auth, categories }) {
                                 <thead className="bg-gray-50">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {categories.data.map(category => (
                                         <tr key={category.id}>
                                             <td className="px-6 py-4 whitespace-nowrap">{category.title}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <Link href={route('categories.edit', category.id)} className="text-indigo-600 hover:text-indigo-900 mr-4">
+                                                    Edit
+                                                </Link>
+                                                <button onClick={() => confirmCategoryDeletion(category)} className="text-red-600 hover:text-red-900">
+                                                    Delete
+                                                </button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -35,6 +69,23 @@ export default function Index({ auth, categories }) {
                     </div>
                 </div>
             </div>
+
+            <Modal show={confirmingCategoryDeletion} onClose={closeModal}>
+                <form onSubmit={deleteCategory} className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Are you sure you want to delete this category?
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                        Once the category is deleted, all of its resources and data will be permanently deleted.
+                    </p>
+                    <div className="mt-6 flex justify-end">
+                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                        <DangerButton className="ml-3">
+                            Delete Category
+                        </DangerButton>
+                    </div>
+                </form>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

@@ -18,12 +18,10 @@ class SubtaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSubtaskRequest $request)
+    public function store(StoreSubtaskRequest $request, Task $task)
     {
-        $task = Task::find($request->input('task_id'));
-        $this->authorize('create', $task);
         try {
-            Subtask::create($request->validated());
+            $task->subtasks()->create($request->validated());
         } catch (Exception $e) {
             Log::error('Erreur lors de la création de la sous-tâche: '.$e->getMessage());
             return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de l\'ajout de la sous-tâche.']);
