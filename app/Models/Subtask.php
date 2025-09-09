@@ -13,7 +13,8 @@ class Subtask extends Model
     protected $fillable =[
         'title',
         'status',
-        'order'
+        'order',
+        'task_id',
     ];
 
     /**

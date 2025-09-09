@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->string('title', 150);
             $table->text('description')->nullable();
-            $table->string('priority')->default('faible');
-            $table->string('status')->default('a_faire');
+            $table->string('priority')->default('Low');
+            $table->string('status')->default('Open');
             $table->boolean('is_sequential')->default(false);
             $table->timestamp('due_date')->nullable();
             $table->timestamps();

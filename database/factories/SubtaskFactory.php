@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class SubtaskFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => $this->faker->sentence(5), // Titre de 5 mots
+            'status' => $this->faker->randomElement([false, true]), // Statut aléatoire
+            'task_id' => Task::factory(), // Associe à une tâche parente
         ];
     }
 }
