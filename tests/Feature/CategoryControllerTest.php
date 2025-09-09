@@ -31,12 +31,16 @@ class CategoryControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        $otherUsersCategory = Category::factory()->create(['user_id' => $otherUser->id]);
+        $otherUsersCategory = Category::factory()->create(['user_id' => $otherUser->id, 'name' => 'Other User Category']);
 
-        $this->actingAs($user)
-            ->get(route('categories.index'))
-            ->assertOk()
-            ->assertDontSee($otherUsersCategory->name);
+        $response = $this->actingAs($user)
+            ->get(route('categories.index'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('Categories/Index')
+            ->has('categories.data', 0)
+        );
     }
 
     public function test_user_can_create_category()
