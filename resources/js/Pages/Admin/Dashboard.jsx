@@ -1,20 +1,25 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 // Composant pour afficher une carte de statistique
-const StatCard = ({ title, value, icon }) => (
-    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <div className="p-6 text-gray-900 flex items-center">
-            <div className="bg-blue-500 text-white rounded-full p-3 mr-4">
-                {icon}
-            </div>
-            <div>
-                <div className="text-sm text-gray-500">{title}</div>
-                <div className="text-2xl font-bold">{value}</div>
+const StatCard = ({ title, value, icon, link = null }) => {
+    const content = (
+        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div className="p-6 text-gray-900 flex items-center">
+                <div className="bg-blue-500 text-white rounded-full p-3 mr-4">
+                    {icon}
+                </div>
+                <div>
+                    <div className="text-sm text-gray-500">{title}</div>
+                    <div className="text-2xl font-bold">{value}</div>
+                </div>
             </div>
         </div>
-    </div>
-);
+    );
+
+    return link ? <Link href={link}>{content}</Link> : content;
+};
+
 
 // Icônes SVG pour les cartes
 const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.978 5.978 0 0112 13a5.979 5.979 0 012.121.303m-2.121-1.903a4 4 0 10-5.292 0" /></svg>;
@@ -32,12 +37,18 @@ export default function AdminDashboard({ auth, stats }) {
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="mb-6">
+                         <Link href={route('admin.users.index')} className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+                            Gérer les utilisateurs
+                        </Link>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Carte pour le nombre total d'utilisateurs */}
                         <StatCard 
                             title="Utilisateurs" 
                             value={stats.totalUsers}
-                            icon={<UsersIcon />} 
+                            icon={<UsersIcon />}
+                            link={route('admin.users.index')}
                         />
                         {/* Carte pour le nombre total de tâches */}
                         <StatCard 
@@ -57,3 +68,4 @@ export default function AdminDashboard({ auth, stats }) {
         </AuthenticatedLayout>
     );
 }
+

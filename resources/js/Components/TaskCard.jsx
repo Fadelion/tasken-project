@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import PrimaryButton from '@/Components/PrimaryButton';
-import SecondaryButton from '@/Components/SecondaryButton';
+import PrimaryButton from './PrimaryButton';
+import SecondaryButton from './SecondaryButton';
 import { router, Link } from '@inertiajs/react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 
 export default function TaskCard({ task }) {
     const [expanded, setExpanded] = useState(false);
 
-    // Calcule le pourcentage avec le statut booléen (true === terminé)
-    const completedSubtasks = task.subtasks.filter(subtask => subtask.status === true).length;
-    const progress = task.subtasks.length > 0 ? (completedSubtasks / task.subtasks.length) * 100 : 0;
+    // Utilise la valeur calculée par le backend
+    const progress = task.progress_percentage;
+    const completedSubtasks = task.completed_subtasks_count;
 
     const handleDelete = () => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
@@ -32,8 +32,9 @@ export default function TaskCard({ task }) {
                 toast.success('Statut de la sous-tâche mis à jour !');
             },
             onError: (errors) => {
-                const errorMessage = errors.message || 'Une erreur est survenue.';
+                const errorMessage = errors.msg || 'Une erreur est survenue.';
                 toast.error(errorMessage);
+                // On recharge même en cas d'erreur pour resynchroniser l'état
                 router.reload({ only: ['tasks'], preserveScroll: true });
             }
         });
