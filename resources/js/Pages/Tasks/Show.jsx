@@ -22,6 +22,8 @@ export default function Show({ auth, task }) {
     const markTaskAsCompleted = () => {
         patch(route('tasks.update', task.id), {
             status: 'Completed'
+        }, {
+            onSuccess: () => router.reload({ only: ['task'] })
         });
     };
 

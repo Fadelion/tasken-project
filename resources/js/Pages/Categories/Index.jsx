@@ -1,10 +1,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 
-export default function Index({ categories }) {
+export default function Index({ auth, categories }) {
 
     return (
         <AuthenticatedLayout
+            user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Catégories</h2>}
         >
             <Head title="Catégories" />

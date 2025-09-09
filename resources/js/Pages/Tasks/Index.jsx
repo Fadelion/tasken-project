@@ -7,20 +7,30 @@ import { useState, useEffect } from 'react';
 import { pickBy } from 'lodash';
 
 export default function Index({ auth, tasks, filters, success }) {
+
     const { delete: destroy } = useForm();
     const [search, setSearch] = useState(filters.search || '');
 
+    // Gestion de la recherche uniquement
     useEffect(() => {
         const timeout = setTimeout(() => {
             const query = pickBy({ search });
-            router.get(route('tasks.index'), query, {
+            router.get(route('tasks.index'), { ...query, page: 1 }, {
                 preserveState: true,
                 replace: true,
             });
         }, 300);
-
         return () => clearTimeout(timeout);
     }, [search]);
+
+    // Gestion de la pagination : on conserve la recherche dans l'URL
+    const handlePageChange = (url) => {
+        const query = pickBy({ search });
+        router.get(url, query, {
+            preserveState: true,
+            replace: true,
+        });
+    };
 
     const deleteTask = (id) => {
         if (confirm('Are you sure you want to delete this task?')) {
@@ -71,7 +81,7 @@ export default function Index({ auth, tasks, filters, success }) {
                     )}
 
                     <div className="mt-6">
-                        <Pagination links={tasks.links} />
+                        <Pagination links={tasks.links} onPageChange={handlePageChange} />
                     </div>
                 </div>
             </div>

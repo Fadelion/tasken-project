@@ -27,9 +27,9 @@ class SubtaskPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, \App\Models\Task $task): bool
     {
-        return false;
+        return $user->id === $task->user_id;
     }
 
     /**

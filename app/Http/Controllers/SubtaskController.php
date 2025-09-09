@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Subtask;
 use App\Http\Requests\StoreSubtaskRequest;
 use App\Http\Requests\UpdateSubtaskRequest;
+use App\Models\Task;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -19,6 +20,8 @@ class SubtaskController extends Controller
      */
     public function store(StoreSubtaskRequest $request)
     {
+        $task = Task::find($request->input('task_id'));
+        $this->authorize('create', $task);
         try {
             Subtask::create($request->validated());
         } catch (Exception $e) {

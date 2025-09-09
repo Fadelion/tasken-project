@@ -16,7 +16,10 @@ const priorityClass = (priority) => {
 
 export default function TaskCard({ task, onDelete }) {
     const { processing } = useForm();
-    const progress = task.progress_percentage;
+    // Sécurise la valeur de progress entre 0 et 100
+    const progress = Math.max(0, Math.min(100, Number(task.progress_percentage) || 0));
+    //const progress = task.progress_percentage;
+    //console.log(progress);
 
     return (
         <div className={`bg-white overflow-hidden shadow-sm rounded-lg p-4 flex flex-col justify-between ${priorityClass(task.priority)}`}>

@@ -71,12 +71,13 @@ class Task extends Model
         return Attribute::make(
             get: function () {
                 // Charge les compteurs si non présents
-                if (!isset($this->subtasks_count) || !isset($this->completedSubtasks_count)) {
+
+                if (!isset($this->subtasks_count) || !isset($this->completed_subtasks_count)) {
                     $this->loadCount(['subtasks', 'completedSubtasks']);
                 }
 
                 $totalSubtasks = $this->subtasks_count ?? 0;
-                $completedSubtasks = $this->completedSubtasks_count ?? 0;
+                $completedSubtasks = $this->completed_subtasks_count ?? 0;
 
                 if ($totalSubtasks == 0) {
                     return 0;
