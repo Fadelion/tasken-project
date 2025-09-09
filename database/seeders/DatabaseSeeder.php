@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\Subtask;
 use App\Models\Task;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,13 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
         // Création d'un utilisateur de test spécifique
         $testUser = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => Hash::make('password'),
-            'role' => 'user', // Rôle explicite
+            'role' => 'user',
         ]);
 
         // Création d'un administrateur
@@ -35,19 +33,44 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Création de catégories (3) pour l'utilisateur de test
-        $categories = Category::factory(3)->create([
-            'user_id' => $testUser->id
-        ]);
+        $categories = Category::factory(3)->create(['user_id' => $testUser->id]);
 
-        // Création de 10 tâches pour cet utilisateur, en les associant à ses catégories
         foreach ($categories as $category) {
-            Task::factory(10)->create([
+            // --- Tâches AVEC sous-tâches et statut cohérent ---
+
+            // 1. Tâche "Open" (aucune sous-tâche terminée)
+            Task::factory()->create([
                 'user_id' => $testUser->id,
-                'category_id' => $category->id
+                'category_id' => $category->id,
+                'status' => 'Open',
             ])->each(function ($task) {
-                // Pour chaque tâche, créer 3 sous-tâches
-                Subtask::factory(3)->create(['task_id' => $task->id]);
+                Subtask::factory(3)->create(['task_id' => $task->id, 'status' => false]);
             });
+
+            // 2. Tâche "In Progress" (quelques sous-tâches terminées)
+            Task::factory()->create([
+                'user_id' => $testUser->id,
+                'category_id' => $category->id,
+                'status' => 'In Progress',
+            ])->each(function ($task) {
+                Subtask::factory(2)->create(['task_id' => $task->id, 'status' => true]);
+                Subtask::factory(2)->create(['task_id' => $task->id, 'status' => false]);
+            });
+
+            // 3. Tâche "Completed" (toutes sous-tâches terminées)
+            Task::factory()->create([
+                'user_id' => $testUser->id,
+                'category_id' => $category->id,
+                'status' => 'Completed',
+            ])->each(function ($task) {
+                Subtask::factory(4)->create(['task_id' => $task->id, 'status' => true]);
+            });
+
+            // --- Tâches SANS sous-tâches ---
+            Task::factory(5)->create([
+                'user_id' => $testUser->id,
+                'category_id' => $category->id,
+            ]);
         }
 
         // Créer 10 autres utilisateurs aléatoires

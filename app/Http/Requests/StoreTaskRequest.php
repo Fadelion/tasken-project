@@ -28,7 +28,7 @@ class StoreTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'priority' => ['required', Rule::in(['Low', 'Normal', 'High'])],
             'status' => ['required', Rule::in(['Open', 'In Progress', 'Completed', 'Deferred'])],
-            'due_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:today',
             'category_id' => [
                 'required', 'integer',
                 Rule::exists('categories', 'id')->where(function ($query) {
