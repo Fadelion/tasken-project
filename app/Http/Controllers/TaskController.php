@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Exception;
 
 
@@ -58,15 +59,45 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         try {
-            $task = new Task($request->validated());
-            $task->user_id = Auth::id();
-            $task->save();
+            DB::transaction(function () use ($request) {
+                $validated = $request->validated();
+                $taskData = collect($validated)->except('subtasks')->all();
+
+                $task = new Task($taskData);
+                $task->user_id = Auth::id();
+                $task->save();
+
+                if (isset($validated['subtasks'])) {
+                    foreach ($validated['subtasks'] as $subtaskData) {
+                        $task->subtasks()->create([
+                            'title' => $subtaskData['title'],
+                            'status' => false, // Default status for new subtasks
+                        ]);
+                    }
+                }
+            });
         } catch (Exception $e) {
             Log::error('Erreur lors de la création de la tâche: '.$e->getMessage());
-            return Redirect::route('tasks.index')->withErrors(['msg' => 'Une erreur est survenue lors de la création de la tâche.']);
+            return Redirect::route('tasks.index')->with('error', 'Une erreur est survenue lors de la création de la tâche.');
         }
 
-        return Redirect::route('tasks.index')->with('success', 'Tâche créée avec succès.');
+        return Redirect::route('tasks.index')->with('success', 'Tâche et sous-tâches créées avec succès.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Task $task)
+    {
+        $this->authorize('view', $task);
+
+        $task->load(['category', 'subtasks' => function ($query) {
+            $query->orderBy('created_at', 'asc');
+        }]);
+
+        return Inertia::render('Tasks/Show', [
+            'task' => $task,
+        ]);
     }
 
     /**

@@ -1,11 +1,12 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, Link } from "@inertiajs/react";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import PrimaryButton from "@/Components/PrimaryButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 
-export default function Create({ categories }) {
+export default function Create({ auth, categories }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
@@ -13,7 +14,27 @@ export default function Create({ categories }) {
         priority: 'Normal',
         status: 'Open',
         due_date: '',
+        subtasks: [], // Array to hold subtasks
     });
+
+    // Add a new subtask input field
+    const addSubtask = () => {
+        setData('subtasks', [...data.subtasks, { title: '' }]);
+    };
+
+    // Remove a subtask input field by index
+    const removeSubtask = (index) => {
+        const newSubtasks = [...data.subtasks];
+        newSubtasks.splice(index, 1);
+        setData('subtasks', newSubtasks);
+    };
+
+    // Handle changes in subtask titles
+    const handleSubtaskChange = (index, value) => {
+        const newSubtasks = [...data.subtasks];
+        newSubtasks[index].title = value;
+        setData('subtasks', newSubtasks);
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -22,113 +43,136 @@ export default function Create({ categories }) {
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Créer une tâche</h2>}
+            user={auth.user}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Create a New Task</h2>}
         >
-            <Head title="Création de tâche" />
+            <Head title="Create Task" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
+                        <div className="p-8">
                             <form onSubmit={submit}>
-                                <div className="mb-4">
+                                {/* Task Title */}
+                                <div className="mb-6">
                                     <InputLabel htmlFor="title" value="Title" />
                                     <TextInput
                                         id="title"
-                                        name="title"
                                         value={data.title}
-                                        className="mt-1 block w-full"
-                                        autoComplete="off"
-                                        isFocused={true}
                                         onChange={(e) => setData('title', e.target.value)}
+                                        className="mt-1 block w-full"
+                                        isFocused
                                     />
                                     <InputError message={errors.title} className="mt-2" />
                                 </div>
 
-                                <div className="mb-4">
-                                    <InputLabel htmlFor="category_id" value="Category" />
-                                    <select
-                                        id="category_id"
-                                        name="category_id"
-                                        value={data.category_id}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => setData('category_id', e.target.value)}
-                                    >
-                                        {categories.map(category => (
-                                            <option key={category.id} value={category.id}>{category.title}</option>
-                                        ))}
-                                    </select>
-                                    <InputError message={errors.category_id} className="mt-2" />
-                                </div>
-
-                                <div className="mb-4">
+                                {/* Task Description */}
+                                <div className="mb-6">
                                     <InputLabel htmlFor="description" value="Description" />
                                     <textarea
                                         id="description"
-                                        name="description"
                                         value={data.description}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                         onChange={(e) => setData('description', e.target.value)}
-                                    />
+                                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        rows="4"
+                                    ></textarea>
                                     <InputError message={errors.description} className="mt-2" />
                                 </div>
 
-                                <div className="mb-4">
-                                    <InputLabel htmlFor="priority" value="Priority" />
-                                    <select
-                                        id="priority"
-                                        name="priority"
-                                        value={data.priority}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => setData('priority', e.target.value)}
-                                    >
-                                        <option value="Low">Faible</option>
-                                        <option value="Normal">Normal</option>
-                                        <option value="High">Elevé</option>
-                                    </select>
-                                    <InputError message={errors.priority} className="mt-2" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    {/* Category */}
+                                    <div>
+                                        <InputLabel htmlFor="category_id" value="Category" />
+                                        <select
+                                            id="category_id"
+                                            value={data.category_id}
+                                            onChange={(e) => setData('category_id', e.target.value)}
+                                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        >
+                                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
+                                        </select>
+                                        <InputError message={errors.category_id} className="mt-2" />
+                                    </div>
+                                    {/* Due Date */}
+                                    <div>
+                                        <InputLabel htmlFor="due_date" value="Due Date" />
+                                        <TextInput
+                                            id="due_date"
+                                            type="date"
+                                            value={data.due_date}
+                                            onChange={(e) => setData('due_date', e.target.value)}
+                                            className="mt-1 block w-full"
+                                        />
+                                        <InputError message={errors.due_date} className="mt-2" />
+                                    </div>
+                                    {/* Priority */}
+                                    <div>
+                                        <InputLabel htmlFor="priority" value="Priority" />
+                                        <select
+                                            id="priority"
+                                            value={data.priority}
+                                            onChange={(e) => setData('priority', e.target.value)}
+                                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        >
+                                            <option value="Low">Low</option>
+                                            <option value="Normal">Normal</option>
+                                            <option value="High">High</option>
+                                        </select>
+                                        <InputError message={errors.priority} className="mt-2" />
+                                    </div>
+                                    {/* Status */}
+                                    <div>
+                                        <InputLabel htmlFor="status" value="Status" />
+                                        <select
+                                            id="status"
+                                            value={data.status}
+                                            onChange={(e) => setData('status', e.target.value)}
+                                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                        >
+                                            <option value="Open">Open</option>
+                                            <option value="In Progress">In Progress</option>
+                                            <option value="Completed">Completed</option>
+                                            <option value="Deferred">Deferred</option>
+                                        </select>
+                                        <InputError message={errors.status} className="mt-2" />
+                                    </div>
                                 </div>
 
-                                <div className="mb-4">
-                                    <InputLabel htmlFor="status" value="Status" />
-                                    <select
-                                        id="status"
-                                        name="status"
-                                        value={data.status}
-                                        className="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                                        onChange={(e) => setData('status', e.target.value)}
-                                    >
-                                        <option value="Open">A Faire</option>
-                                        <option value="In Progress">En Cours</option>
-                                        <option value="Completed">Terminé</option>
-                                        <option value="Deferred">Annulé</option>
-                                    </select>
-                                    <InputError message={errors.status} className="mt-2" />
+                                {/* Subtasks Section */}
+                                <div className="mb-6">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">Subtasks</h3>
+                                    <div className="space-y-4">
+                                        {data.subtasks.map((subtask, index) => (
+                                            <div key={index} className="flex items-center space-x-2">
+                                                <TextInput
+                                                    type="text"
+                                                    value={subtask.title}
+                                                    onChange={(e) => handleSubtaskChange(index, e.target.value)}
+                                                    className="block w-full"
+                                                    placeholder={`Subtask ${index + 1}`}
+                                                />
+                                                <button type="button" onClick={() => removeSubtask(index)} className="text-red-500 hover:text-red-700">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <SecondaryButton type="button" onClick={addSubtask} className="mt-4">
+                                        Add Subtask
+                                    </SecondaryButton>
                                 </div>
 
-                                <div className="mb-4">
-                                    <InputLabel htmlFor="due_date" value="Due Date" />
-                                    <TextInput
-                                        id="due_date"
-                                        type="date"
-                                        name="due_date"
-                                        value={data.due_date}
-                                        className="mt-1 block w-full"
-                                        onChange={(e) => setData('due_date', e.target.value)}
-                                    />
-                                    <InputError message={errors.due_date} className="mt-2" />
+                                <div className="flex items-center justify-end space-x-4">
+                                    <Link href={route('tasks.index')} className="text-gray-600">Cancel</Link>
+                                    <PrimaryButton disabled={processing}>
+                                        Create Task
+                                    </PrimaryButton>
                                 </div>
-
-
-                                <PrimaryButton disabled={processing}>
-                                    Créer
-                                </PrimaryButton>
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
-
         </AuthenticatedLayout>
-    )
+    );
 }

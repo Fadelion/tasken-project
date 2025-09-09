@@ -34,7 +34,9 @@ class StoreTaskRequest extends FormRequest
                 Rule::exists('categories', 'id')->where(function ($query) {
                     $query->where('user_id', auth()->id());
                 })
-            ]
+            ],
+            'subtasks' => 'nullable|array',
+            'subtasks.*.title' => 'required|string|max:255',
         ];
     }
 }
