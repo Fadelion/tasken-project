@@ -11,21 +11,24 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable =[
-        'title',
+        'name',
         'user_id',
     ];
 
     /**
-     * Relation entre catégorie et utilisateur
+     * Get the user that owns the category.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user() {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Relation entre catégorie et tache
+     * Get the tasks for the category.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-
     public function tasks() {
         return $this->hasMany(Task::class);
     }

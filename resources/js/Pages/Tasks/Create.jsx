@@ -89,7 +89,7 @@ export default function Create({ auth, categories }) {
                                             onChange={(e) => setData('category_id', e.target.value)}
                                             className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                                         >
-                                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.title}</option>)}
+                                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                                         </select>
                                         <InputError message={errors.category_id} className="mt-2" />
                                     </div>
