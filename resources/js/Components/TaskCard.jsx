@@ -1,56 +1,123 @@
-import { Link, useForm } from '@inertiajs/react';
+import React, { useState } from 'react';
+import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
+import { router, Link } from '@inertiajs/react';
+import { toast } from 'react-toastify';
 
-// Helper function to get color classes based on priority
-const priorityClass = (priority) => {
-    switch (priority) {
-        case 'High':
-            return 'border-l-4 border-red-500';
-        case 'Normal':
-            return 'border-l-4 border-yellow-500';
-        case 'Low':
-            return 'border-l-4 border-green-500';
-        default:
-            return 'border-l-4 border-gray-300';
-    }
-};
+export default function TaskCard({ task }) {
+    const [expanded, setExpanded] = useState(false);
 
-export default function TaskCard({ task, onDelete }) {
-    const { processing } = useForm();
-    const progress = task.progress_percentage;
+    // Calcule le pourcentage avec le statut booléen (true === terminé)
+    const completedSubtasks = task.subtasks.filter(subtask => subtask.status === true).length;
+    const progress = task.subtasks.length > 0 ? (completedSubtasks / task.subtasks.length) * 100 : 0;
+
+    const handleDelete = () => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
+            router.delete(route('tasks.destroy', task.id), {
+                preserveScroll: true,
+                onSuccess: () => toast.success('Tâche supprimée avec succès !'),
+                onError: () => toast.error('Erreur lors de la suppression.'),
+            });
+        }
+    };
+
+    // Gère le changement de statut avec une valeur booléenne
+    const handleSubtaskStatusChange = (subtask, newStatus) => {
+        router.patch(route('subtasks.update', { subtask: subtask.id }), {
+            status: newStatus // Envoie true ou false directement
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['tasks'], preserveScroll: true });
+                toast.success('Statut de la sous-tâche mis à jour !');
+            },
+            onError: (errors) => {
+                const errorMessage = errors.message || 'Une erreur est survenue.';
+                toast.error(errorMessage);
+                router.reload({ only: ['tasks'], preserveScroll: true });
+            }
+        });
+    };
+
+    const isSubtaskDisabled = (subtask, index) => {
+        if (!task.is_sequential) {
+            return false;
+        }
+        for (let i = 0; i < index; i++) {
+            // Vérifie si les précédentes sont terminées (status === true)
+            if (task.subtasks[i].status !== true) {
+                return true;
+            }
+        }
+        return false;
+    };
+
 
     return (
-        <div className={`bg-white overflow-hidden shadow-sm rounded-lg p-4 flex flex-col justify-between ${priorityClass(task.priority)}`}>
-            <div>
+        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-4">
+            <div className="p-6">
                 <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-bold text-gray-900">{task.title}</h3>
-                    <span className="text-sm font-semibold bg-gray-200 text-gray-700 px-2 py-1 rounded-full">{task.category?.title || 'N/A'}</span>
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-800">{task.title}</h3>
+                        <p className="text-sm text-gray-500">
+                            Échéance: {new Date(task.due_date).toLocaleDateString('fr-FR')} - Priorité: <span className="capitalize">{task.priority}</span>
+                        </p>
+                    </div>
+                    <div className="flex space-x-2 flex-shrink-0">
+                        <Link href={route('tasks.edit', task.id)}>
+                            <SecondaryButton>Modifier</SecondaryButton>
+                        </Link>
+                        <PrimaryButton onClick={() => setExpanded(!expanded)}>
+                            {expanded ? 'Réduire' : 'Détails'}
+                        </PrimaryButton>
+                    </div>
                 </div>
-                <p className="text-sm text-gray-600 mt-2 min-h-[40px]">{task.description}</p>
-            </div>
 
-            {/* Progress Bar Section */}
-            <div className="mt-4">
-                <div className="flex justify-between items-center text-xs text-gray-500 mb-1">
-                    <span>Progress</span>
-                    <span>{task.completed_subtasks_count} / {task.subtasks_count}</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
-                </div>
-            </div>
+                {expanded && (
+                    <div className="mt-4">
+                        <p className="text-gray-600 mb-4">{task.description}</p>
 
-            <div className="mt-4 flex justify-between items-center">
-                <div className="flex items-center space-x-2">
-                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${task.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{task.status}</span>
-                    <span className="text-xs text-gray-500">{new Date(task.due_date).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Link href={route('tasks.edit', task.id)} className="text-sm text-indigo-600 hover:text-indigo-900 font-medium">Edit</Link>
-                    <button onClick={() => onDelete(task.id)} disabled={processing} className="text-sm text-red-600 hover:text-red-900 font-medium">
-                        Delete
-                    </button>
-                </div>
+                        {task.subtasks.length > 0 && (
+                            <div>
+                                <span className="text-sm font-medium text-gray-700">Progression</span>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                                </div>
+                                <span className="text-xs text-gray-500">{completedSubtasks} / {task.subtasks.length} sous-tâches terminées</span>
+                            </div>
+                        )}
+
+                        <div className="mt-4">
+                            <h4 className="font-semibold text-gray-700">Sous-tâches :</h4>
+                            <ul className="list-disc list-inside mt-2 space-y-2">
+                                {task.subtasks.map((subtask, index) => (
+                                    <li key={subtask.id} className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            checked={subtask.status} // Directement lié à la valeur booléenne
+                                            onChange={(e) => handleSubtaskStatusChange(subtask, e.target.checked)} // Envoie la nouvelle valeur booléenne
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-50"
+                                            disabled={isSubtaskDisabled(subtask, index)}
+                                        />
+                                        <span className={`ms-2 ${subtask.status ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                                            {subtask.title}
+                                        </span>
+                                    </li>
+                                ))}
+                                {task.subtasks.length === 0 && (
+                                    <p className="text-sm text-gray-500">Aucune sous-tâche pour cette tâche.</p>
+                                )}
+                            </ul>
+                        </div>
+                        <div className="mt-6 flex justify-end">
+                            <button onClick={handleDelete} className="text-red-600 hover:text-red-800 text-sm font-medium">
+                                Supprimer la tâche
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
-};
+}
+
