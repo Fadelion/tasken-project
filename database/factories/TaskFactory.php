@@ -23,7 +23,7 @@ class TaskFactory extends Factory
             'description' => $this->faker->paragraph(2), // Génère un paragraphe de 2 phrases
             'due_date' => $this->faker->dateTimeBetween('now', '+1 year'), // Date d'échéance dans l'année à venir
             'priority' => $this->faker->randomElement(['Low', 'Normal', 'High']), // Priorité aléatoire
-            'status' => $this->faker->randomElement(['Open', 'In Progress', 'Completed', 'Deferred']), // Statut aléatoire
+            'status' => $this->faker->randomElement(['Open', 'In Progress', 'Completed', 'Cancel']), // Statut aléatoire
             'is_sequential' => $this->faker->boolean(25), // 25% de chance que la tâche soit séquentielle
             'user_id' => User::factory(), // Associe à un utilisateur
             'category_id' => Category::factory(), // Associe à une catégorie

@@ -117,7 +117,7 @@ export default function Edit({ auth, task, categories, subtasks }) {
                                     <option value="Open">A Faire</option>
                                     <option value="In Progress">En Cours</option>
                                     <option value="Completed">Terminé</option>
-                                    <option value="Deferred">Annulé</option>
+                                    <option value="Cancel">Annulé</option>
                                 </select>
                                 <InputError message={errors.status} className="mt-2" />
                             </div>

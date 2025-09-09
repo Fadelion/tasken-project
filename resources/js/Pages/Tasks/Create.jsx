@@ -132,7 +132,7 @@ export default function Create({ auth, categories }) {
                                             <option value="Open">Open</option>
                                             <option value="In Progress">In Progress</option>
                                             <option value="Completed">Completed</option>
-                                            <option value="Deferred">Deferred</option>
+                                            <option value="Cancel">Cancel</option>
                                         </select>
                                         <InputError message={errors.status} className="mt-2" />
                                     </div>

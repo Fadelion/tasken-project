@@ -34,9 +34,9 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'priority' => ['sometimes', 'required', Rule::in(['Low', 'Normal', 'High'])],
             'status' => [
-                'sometimes', 'required', Rule::in(['Open', 'In Progress', 'Completed', 'Deferred']),
+                'sometimes', 'required', Rule::in(['Open', 'In Progress', 'Completed', 'Cancel']),
                 function ($attribute, $value, $fail) use ($task) {
-                    if ($value === 'Completed' && in_array($task->status, ['Open', 'Deferred'])) {
+                    if ($value === 'Completed' && in_array($task->status, ['Open', 'Cancel'])) {
                         $fail('Une tâche ne peut pas passer directement du statut "Ouvert" ou "Différé" à "Terminé".');
                     }
                 }

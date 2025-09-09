@@ -33,7 +33,7 @@ class TaskController extends Controller
             ->with('category', 'subtasks')
             ->withCount(['subtasks', 'completedSubtasks'])
             ->latest()
-            ->paginate(8)
+            ->paginate(9)
             ->appends(request()->input());
 
         return Inertia::render('Tasks/Index', [

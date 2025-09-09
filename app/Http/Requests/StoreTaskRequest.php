@@ -27,7 +27,7 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required|string|max:150',
             'description' => 'nullable|string',
             'priority' => ['required', Rule::in(['Low', 'Normal', 'High'])],
-            'status' => ['required', Rule::in(['Open', 'In Progress', 'Completed', 'Deferred'])],
+            'status' => ['required', Rule::in(['Open', 'In Progress', 'Completed', 'Cancel'])],
             'due_date' => 'nullable|date|after_or_equal:today',
             'category_id' => [
                 'required', 'integer',

@@ -38,11 +38,11 @@ class SubtaskObserver
     protected function updateParentTaskStatus(Task $task)
     {
         // We don't want to change status if it was manually set to something final
-        if ($task->status === 'Completed' || $task->status === 'Deferred') {
+        if ($task->status === 'Completed' || $task->status === 'Cancel') {
             // However, if all subtasks are done, it should be marked completed
             // Let's reconsider this. If a user marks a task "In Progress" and then
             // finishes all subtasks, it should become "Completed".
-            // The check for 'Deferred' is probably good.
+            // The check for 'Cancel' is probably good.
         }
 
         $subtasksCount = $task->subtasks()->count();
