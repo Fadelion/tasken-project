@@ -126,10 +126,10 @@ class TaskController extends Controller
             $task->update($request->validated());
         } catch (Exception $e) {
             Log::error('Erreur lors de la mise à jour de la tâche: '.$e->getMessage());
-            return Redirect::route('tasks.index')->withErrors(['msg' => 'Une erreur est survenue lors de la mise à jour.']);
+            return Redirect::back()->withErrors(['msg' => 'Une erreur est survenue lors de la mise à jour.']);
         }
 
-        return Redirect::route('tasks.index')->with('success', 'Tâche mise à jour avec succès.');
+        return Redirect::back()->with('success', 'Tâche mise à jour avec succès.');
     }
 
     /**

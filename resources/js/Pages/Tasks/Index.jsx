@@ -5,11 +5,16 @@ import Pagination from '@/Components/Pagination';
 import TaskCard from '@/Components/TaskCard';
 import { useState, useEffect } from 'react';
 import { pickBy } from 'lodash';
+import Modal from '@/Components/Modal';
+import SecondaryButton from '@/Components/SecondaryButton';
+import DangerButton from '@/Components/DangerButton';
 
 export default function Index({ auth, tasks, filters, success }) {
 
     const { delete: destroy } = useForm();
     const [search, setSearch] = useState(filters.search || '');
+    const [confirmingTaskDeletion, setConfirmingTaskDeletion] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
 
     // Gestion de la recherche uniquement
     useEffect(() => {
@@ -32,12 +37,24 @@ export default function Index({ auth, tasks, filters, success }) {
         });
     };
 
-    const deleteTask = (id) => {
-        if (confirm('Are you sure you want to delete this task?')) {
-            destroy(route('tasks.destroy', id), {
+    const confirmTaskDeletion = (id) => {
+        setTaskToDelete(id);
+        setConfirmingTaskDeletion(true);
+    };
+
+    const deleteTask = (e) => {
+        e.preventDefault();
+        if (taskToDelete) {
+            destroy(route('tasks.destroy', taskToDelete), {
                 preserveScroll: true,
+                onSuccess: () => closeModal(),
             });
         }
+    };
+
+    const closeModal = () => {
+        setConfirmingTaskDeletion(false);
+        setTaskToDelete(null);
     };
 
     return (
@@ -70,7 +87,7 @@ export default function Index({ auth, tasks, filters, success }) {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {tasks.data.map(task => (
-                            <TaskCard key={task.id} task={task} onDelete={deleteTask} />
+                            <TaskCard key={task.id} task={task} onDelete={confirmTaskDeletion} />
                         ))}
                     </div>
 
@@ -85,6 +102,23 @@ export default function Index({ auth, tasks, filters, success }) {
                     </div>
                 </div>
             </div>
+
+            <Modal show={confirmingTaskDeletion} onClose={closeModal}>
+                <form onSubmit={deleteTask} className="p-6">
+                    <h2 className="text-lg font-medium text-gray-900">
+                        Are you sure you want to delete this task?
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                        Once the task is deleted, all of its data will be permanently deleted.
+                    </p>
+                    <div className="mt-6 flex justify-end">
+                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                        <DangerButton className="ml-3">
+                            Delete Task
+                        </DangerButton>
+                    </div>
+                </form>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

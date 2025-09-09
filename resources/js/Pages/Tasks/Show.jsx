@@ -15,15 +15,12 @@ export default function Show({ auth, task }) {
             status: completed,
         }, {
             preserveScroll: true,
-            onSuccess: () => router.reload({ only: ['task'] }),
         });
     };
 
     const markTaskAsCompleted = () => {
         patch(route('tasks.update', task.id), {
             status: 'Completed'
-        }, {
-            onSuccess: () => router.reload({ only: ['task'] })
         });
     };
 
