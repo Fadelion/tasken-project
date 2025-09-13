@@ -5,7 +5,7 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import PrimaryButton from "@/Components/PrimaryButton";
 
-export default function Create({ categories }) {
+export default function Create({ auth,categories }) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
     });
@@ -17,6 +17,7 @@ export default function Create({ categories }) {
 
     return (
         <AuthenticatedLayout
+            user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Créer une catégorie</h2>}
         >
             <Head title="Création de catégorie" />
